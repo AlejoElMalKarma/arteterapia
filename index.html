@@ -30,6 +30,7 @@
   </style>
 </head>
 <body>
+  <!-- Onboarding -->
   <div id="onboarding" class="container">
     <h1>Bienvenido al Taller de Arte Terapia</h1>
     <p>Selecciona las sesiones que te interesan:</p>
@@ -41,12 +42,14 @@
     <button id="toAgenda" disabled>Continuar</button>
   </div>
 
+  <!-- Agenda -->
   <div id="agenda" class="container hidden">
     <h2>Mi Agenda</h2>
     <div id="agenda-list"></div>
     <button id="toQuests">Empezar Sesiones</button>
   </div>
 
+  <!-- Quests -->
   <div id="quests" class="container hidden">
     <h2>Mis Quests</h2>
     <div class="progress-bar"><div id="progInner" class="progress-bar-inner"></div></div>
@@ -55,13 +58,16 @@
     <button id="viewDash" style="margin-left:.5rem;">Ver Dashboard</button>
   </div>
 
+  <!-- Dashboard -->
   <div id="dashboard" class="container hidden">
     <h2>Dashboard de Coordinación</h2>
     <div class="card">Arteterapia: <span id="cntArt">0</span> inscritos</div>
     <div class="card">Lectura de Café: <span id="cntCoffee">0</span> inscritos</div>
     <div class="card">Lectura de la Mano: <span id="cntPalm">0</span> inscritos</div>
+    <button id="backStart" style="margin-top:1rem;">Volver al inicio</button>
   </div>
 
+  <!-- Modal de recompensa -->
   <div id="modal" class="modal-bg hidden">
     <div class="modal">
       <h2>¡Felicidades!</h2>
@@ -74,20 +80,30 @@
   </div>
 
   <script>
-    // Datos simulados para el dashboard
-    const participants = { 'Arteterapia': 5, 'Lectura de Café': 3, 'Lectura de la Mano': 4 };
+    const participants = {
+      'Arteterapia': 5,
+      'Lectura de Café': 3,
+      'Lectura de la Mano': 4
+    };
 
-    // ONBOARDING → AGENDA
+    // Función para ocultar/mostrar pantallas
+    function show(id) {
+      ['onboarding','agenda','quests','dashboard'].forEach(x =>
+        document.getElementById(x).classList.add('hidden')
+      );
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    // Onboarding → Agenda
     const toAgenda = document.getElementById('toAgenda');
     document.querySelectorAll('#session-select input').forEach(cb =>
       cb.addEventListener('change', () => {
-        const anyChecked = Array.from(document.querySelectorAll('#session-select input'))
-          .some(i => i.checked);
+        const anyChecked = [...document.querySelectorAll('#session-select input')].some(i => i.checked);
         toAgenda.disabled = !anyChecked;
       })
     );
     toAgenda.onclick = () => {
-      const sel = Array.from(document.querySelectorAll('#session-select input'))
+      const sel = [...document.querySelectorAll('#session-select input')]
         .filter(i => i.checked)
         .map(i => i.value);
 
@@ -102,12 +118,11 @@
         agendaList.appendChild(div);
       });
 
-      // Actualizar contadores solo si existe el span
+      // Actualizar contadores
       sel.forEach(s => {
-        let key = '';
-        if (s === 'Arteterapia') key = 'Art';
-        else if (s === 'Lectura de Café') key = 'Coffee';
-        else if (s === 'Lectura de la Mano') key = 'Palm';
+        let key = s === 'Arteterapia' ? 'Art'
+                  : s === 'Lectura de Café' ? 'Coffee'
+                  : 'Palm';
         const span = document.getElementById('cnt' + key);
         if (span) span.textContent = participants[s] || 0;
       });
@@ -115,10 +130,10 @@
       show('agenda');
     };
 
-    // AGENDA → QUESTS
+    // Agenda → Quests
     document.getElementById('toQuests').onclick = () => show('quests');
 
-    // QUESTS
+    // Quests
     const questList = document.getElementById('quest-list');
     const sessions = ['Arteterapia','Lectura de Café','Lectura de la Mano'];
     let completed = {};
@@ -133,13 +148,12 @@
         <div id="badg-${s}"></div>
       `;
       questList.appendChild(card);
-
       document.getElementById(`chk-${s}`).onchange = e => {
         completed[s] = e.target.checked;
         updateProgress();
       };
       document.getElementById(`file-${s}`).onchange = e => {
-        if (e.target.files.length) {
+        if(e.target.files.length) {
           evidence[s] = e.target.files[0].name;
           document.getElementById(`badg-${s}`).innerHTML =
             `<span class="badge">${evidence[s]}</span>`;
@@ -153,7 +167,6 @@
       document.getElementById('progInner').style.width = pct + '%';
       document.getElementById('finishQuests').disabled = (done < sessions.length);
     }
-
     document.getElementById('finishQuests').onclick = () => {
       document.getElementById('modal').classList.remove('hidden');
     };
@@ -164,13 +177,8 @@
       show('dashboard');
     }
 
-    // Cambio de pantallas
-    function show(id) {
-      ['onboarding','agenda','quests','dashboard'].forEach(x =>
-        document.getElementById(x).classList.add('hidden')
-      );
-      document.getElementById(id).classList.remove('hidden');
-    }
+    // Volver al inicio desde el Dashboard
+    document.getElementById('backStart').onclick = () => show('onboarding');
   </script>
 </body>
 </html>
