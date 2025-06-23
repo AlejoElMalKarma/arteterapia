@@ -7,7 +7,7 @@
     body { font-family: sans-serif; margin:0; padding:0; background:#f5f5f5; }
     .container { max-width: 600px; margin: 2rem auto; background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     h1,h2 { text-align: center; margin-bottom: 1rem; }
-    .hidden { display: none; }
+    .hidden { display: none !important; }
     button { background: #6b46c1; color: white; border:none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
     button:disabled { background: #ccc; cursor: not-allowed; }
     .session { display: flex; align-items: center; margin-bottom: .5rem; }
@@ -16,7 +16,7 @@
     .progress-bar { width: 100%; background: #eee; border-radius: 4px; overflow: hidden; margin-bottom: 1rem; }
     .progress-bar-inner { height: 12px; background: #6b46c1; width: 0%; }
     .badge { display:inline-block; background:#d6bcfa; color:#6b46c1; padding:.25rem .5rem; border-radius:4px; margin-top:.5rem; }
-    .modal-bg { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; }
+    .modal-bg { /* no display here; default is flex when not hidden */ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; }
     .modal { background:#fff; padding:1.5rem; border-radius:8px; max-width:320px; text-align:center; }
     input[type="file"] { margin-top: .5rem; }
   </style>
@@ -54,7 +54,7 @@
     <div class="card">Lectura de la Mano: <span id="cntPalm">0</span> inscritos</div>
   </div>
 
-  <div id="modal" class="hidden modal-bg">
+  <div id="modal" class="modal-bg hidden">
     <div class="modal">
       <h2>¡Felicidades!</h2>
       <p>Has completado todas tus quests. 🎉</p>
@@ -90,8 +90,9 @@
         div.textContent = `${s} — Sala ${String.fromCharCode(65+i)} a las ${times[i]}`;
         agendaList.appendChild(div);
       });
-      // actualizar contadores
-      sel.forEach(s=>{ document.getElementById('cnt'+s.replace(/[^A-Za-z]/g,''))?.textContent = participants[s] });
+      sel.forEach(s=>{
+        document.getElementById('cnt'+s.replace(/[^A-Za-z]/g,''))?.textContent = participants[s]
+      });
       show('agenda');
     };
 
@@ -128,8 +129,7 @@
       const done = Object.values(completed).filter(Boolean).length;
       const pct = done / sessions.length * 100;
       document.getElementById('progInner').style.width = pct+'%';
-      const btn = document.getElementById('finishQuests');
-      btn.disabled = (done < sessions.length);
+      document.getElementById('finishQuests').disabled = (done < sessions.length);
     }
     document.getElementById('finishQuests').onclick = () => {
       document.getElementById('modal').classList.remove('hidden');
@@ -140,7 +140,6 @@
       show('dashboard');
     }
 
-    // Simple switching
     function show(id) {
       ['onboarding','agenda','quests','dashboard'].forEach(x =>
         document.getElementById(x).classList.add('hidden')
