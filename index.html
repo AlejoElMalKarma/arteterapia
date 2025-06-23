@@ -63,9 +63,10 @@
   <div id="quests" class="container hidden">
     <h2>✅ Mis Quests</h2>
     <div class="progress-bar"><div id="progInner" class="progress-bar-inner"></div></div>
-
-    <!-- Se generan dinámicamente las cards con feedback más abajo -->
-
+    
+    <!-- *** Este es el contenedor que faltaba *** -->
+    <div id="quest-list"></div>
+    
     <div class="flex flex-center">
       <button id="finishQuests" disabled>🎉 Reclamar Recompensa</button>
       <button id="viewDash">📊 Ver Dashboard</button>
@@ -95,46 +96,46 @@
 
   <script>
     // Datos simulados
-    const participants = { 'Arteterapia': 5, 'Lectura de Café': 3, 'Lectura de la Mano': 4 };
+    const participants = { Arteterapia: 5, 'Lectura de Café': 3, 'Lectura de la Mano': 4 };
     const sessions = ['Arteterapia','Lectura de Café','Lectura de la Mano'];
     let selectedSessions = [], completed = {}, evidence = {};
 
     function show(id) {
-      ['onboarding','agenda','quests','dashboard'].forEach(x =>
+      ['onboarding','agenda','quests','dashboard'].forEach(x=>
         document.getElementById(x).classList.add('hidden')
       );
       document.getElementById(id).classList.remove('hidden');
     }
 
     // Onboarding → Agenda
-    document.querySelectorAll('#session-select input').forEach(cb =>
-      cb.addEventListener('change', () => {
+    document.querySelectorAll('#session-select input').forEach(cb=>
+      cb.addEventListener('change', ()=> {
         document.getElementById('toAgenda').disabled =
           ![...document.querySelectorAll('#session-select input')].some(i=>i.checked);
       })
     );
-    document.getElementById('toAgenda').onclick = () => {
+    document.getElementById('toAgenda').onclick = ()=>{
       selectedSessions = [...document.querySelectorAll('#session-select input')]
         .filter(i=>i.checked).map(i=>i.value);
 
       const container = document.getElementById('agenda-items');
       container.innerHTML = '';
       const times = ['10:00','10:15','10:30','11:00'];
-      selectedSessions.forEach(s => {
+      selectedSessions.forEach(s=>{
         const div = document.createElement('div');
-        div.className = 'agenda-item';
-        div.innerHTML = `
+        div.className='agenda-item';
+        div.innerHTML=`
           <label>
             <strong>${s}</strong>
             <select id="sel-${s}">
               <option value="">Horario…</option>
-              ${times.map(t=>`<option value="${t}">${t}</option>`).join('')}
+              ${times.map(t=>`<option>${t}</option>`).join('')}
             </select>
           </label>`;
         container.appendChild(div);
       });
 
-      container.addEventListener('change', () => {
+      container.addEventListener('change', ()=>{
         document.getElementById('toQuests').disabled =
           !selectedSessions.every(s=>document.getElementById(`sel-${s}`).value);
       });
@@ -143,9 +144,8 @@
     };
 
     // Agenda → Quests
-    document.getElementById('toQuests').onclick = () => {
-      // actualizar contadores
-      selectedSessions.forEach(s => {
+    document.getElementById('toQuests').onclick = ()=>{
+      selectedSessions.forEach(s=>{
         const key = s==='Arteterapia'?'Art':s==='Lectura de Café'?'Coffee':'Palm';
         document.getElementById('cnt'+key).textContent = participants[s];
       });
@@ -153,18 +153,15 @@
       show('quests');
     };
 
-    // Renderizar Quests + Feedback
-    function renderQuests() {
+    // Renderizado de Quests + Feedback
+    function renderQuests(){
       const list = document.getElementById('quest-list');
-      list.innerHTML = '';
-      completed = {}; evidence = {};
-
-      sessions.forEach(s => {
-        if (!selectedSessions.includes(s)) return;
+      list.innerHTML=''; completed={}; evidence={};
+      selectedSessions.forEach(s=>{
         const idSafe = s.replace(/[^A-Za-z0-9]/g,'');
         const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
+        card.className='card';
+        card.innerHTML=`
           <h3>${s}</h3>
           <p>${s==='Arteterapia'
              ? 'Pinta libre (5 min).'
@@ -176,59 +173,57 @@
           <input type="file" id="file-${idSafe}"><br>
           <strong>Tu valoración:</strong>
           <div class="stars">
-            ${[5,4,3,2,1].map(n=>`
-              <input type="radio" id="star${n}-${idSafe}" name="rating-${idSafe}" value="${n}">
-              <label for="star${n}-${idSafe}">★</label>
-            `).join('')}
+            ${[5,4,3,2,1].map(n=>
+              `<input type="radio" id="star${n}-${idSafe}" name="rating-${idSafe}" value="${n}">
+               <label for="star${n}-${idSafe}">★</label>`
+            ).join('')}
           </div>
           <textarea id="comment-${idSafe}" placeholder="Comentarios..."></textarea>
         `;
         list.appendChild(card);
 
-        document.getElementById(`chk-${idSafe}`).onchange = e=>{
-          completed[s] = e.target.checked; updateProgress();
+        document.getElementById(`chk-${idSafe}`).onchange=e=>{
+          completed[s]=e.target.checked; updateProgress();
         };
-        document.getElementById(`file-${idSafe}`).onchange = e=>{
+        document.getElementById(`file-${idSafe}`).onchange=e=>{
           if(e.target.files.length){
-            evidence[s] = e.target.files[0].name;
-            const badge = document.createElement('span');
-            badge.className = 'badge';
-            badge.textContent = evidence[s];
-            card.appendChild(badge);
+            evidence[s]=e.target.files[0].name;
+            const b=document.createElement('span');
+            b.className='badge'; b.textContent=evidence[s];
+            card.appendChild(b);
           }
         };
       });
       updateProgress();
     }
 
-    // Actualizar progreso y habilitar botón
+    // Progreso y habilitación de botón
     function updateProgress(){
-      const done = sessions.filter(s=>selectedSessions.includes(s)).filter(s=>completed[s]).length;
-      const total = selectedSessions.length;
-      document.getElementById('progInner').style.width = (done/total*100)+'%';
-      document.getElementById('finishQuests').disabled = (done<total);
+      const done = selectedSessions.filter(s=>completed[s]).length;
+      const pct = done/selectedSessions.length*100;
+      document.getElementById('progInner').style.width=pct+'%';
+      document.getElementById('finishQuests').disabled=(done<selectedSessions.length);
     }
 
     // Reclamar recompensa
-    document.getElementById('finishQuests').onclick = ()=>{
-      // Recoger feedback por sesión
-      const results = selectedSessions.map(s=>{
-        const idSafe = s.replace(/[^A-Za-z0-9]/g,'');
-        return {
-          session: s,
-          rating: document.querySelector(`input[name="rating-${idSafe}"]:checked`)?.value||0,
-          comment: document.getElementById(`comment-${idSafe}`).value.trim()
+    document.getElementById('finishQuests').onclick=()=>{
+      const results=selectedSessions.map(s=>{
+        const idSafe=s.replace(/[^A-Za-z0-9]/g,'');
+        return{
+          session:s,
+          rating:document.querySelector(`input[name="rating-${idSafe}"]:checked`)?.value||0,
+          comment:document.getElementById(`comment-${idSafe}`).value.trim()
         };
       });
-      console.log('Feedback sessions:', results);
+      console.log('Feedback:',results);
       document.getElementById('modal').classList.remove('hidden');
     };
-    document.getElementById('viewDash').onclick = ()=> show('dashboard');
+    document.getElementById('viewDash').onclick=()=>show('dashboard');
     function closeModal(){
       document.getElementById('modal').classList.add('hidden');
       show('dashboard');
     }
-    document.getElementById('backStart').onclick = ()=> show('onboarding');
+    document.getElementById('backStart').onclick=()=>show('onboarding');
   </script>
 </body>
 </html>
