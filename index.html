@@ -10,21 +10,14 @@
     .hidden { display: none !important; }
     button { background: #6b46c1; color: white; border:none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
     button:disabled { background: #ccc; cursor: not-allowed; }
-    .session { display: flex; align-items: center; margin-bottom: .5rem; }
-    .session input { margin-right: .5rem; }
+    .session { margin-bottom: 1rem; }
+    .session label { display: flex; align-items: flex-start; gap: .5rem; font-size: 1.1rem; }
+    .session p { margin: .25rem 2rem .5rem; font-size: .9rem; color: #555; }
     .card { border: 1px solid #e2e8f0; padding: .75rem; border-radius:4px; margin-bottom: .75rem; }
     .progress-bar { width: 100%; background: #eee; border-radius: 4px; overflow: hidden; margin-bottom: 1rem; }
     .progress-bar-inner { height: 12px; background: #6b46c1; width: 0%; }
     .badge { display:inline-block; background:#d6bcfa; color:#6b46c1; padding:.25rem .5rem; border-radius:4px; margin-top:.5rem; }
-    .modal-bg {
-      display: flex;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      align-items: center;
-      justify-content: center;
-    }
+    .modal-bg { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
     .modal { background:#fff; padding:1.5rem; border-radius:8px; max-width:320px; text-align:center; }
     input[type="file"] { margin-top: .5rem; }
   </style>
@@ -32,49 +25,67 @@
 <body>
   <!-- Onboarding -->
   <div id="onboarding" class="container">
-    <h1>Bienvenido al Taller de Arte Terapia</h1>
+    <h1>🎨 Bienvenido al Taller de Arte Terapia</h1>
     <p>Selecciona las sesiones que te interesan:</p>
     <div id="session-select">
-      <label class="session"><input type="checkbox" value="Arteterapia"> Arteterapia</label>
-      <label class="session"><input type="checkbox" value="Lectura de Café"> Lectura de Café</label>
-      <label class="session"><input type="checkbox" value="Lectura de la Mano"> Lectura de la Mano</label>
+      <div class="session">
+        <label>
+          <input type="checkbox" value="Arteterapia">
+          🎨 <strong>Arteterapia</strong>
+        </label>
+        <p>Sumérgete en un ejercicio creativo de 20 min que desbloquea emociones a través del color y la forma.</p>
+      </div>
+      <div class="session">
+        <label>
+          <input type="checkbox" value="Lectura de Café">
+          ☕ <strong>Lectura de Café</strong>
+        </label>
+        <p>Explora los símbolos en la borra de tu café y anota insights para tu crecimiento personal.</p>
+      </div>
+      <div class="session">
+        <label>
+          <input type="checkbox" value="Lectura de la Mano">
+          ✋ <strong>Lectura de la Mano</strong>
+        </label>
+        <p>Descubre los mensajes de tus líneas de la mano y cómo se relacionan con tu camino vital.</p>
+      </div>
     </div>
-    <button id="toAgenda" disabled>Continuar</button>
+    <button id="toAgenda" disabled>Continuar ➡️</button>
   </div>
 
   <!-- Agenda -->
   <div id="agenda" class="container hidden">
-    <h2>Mi Agenda</h2>
+    <h2>🗓️ Mi Agenda</h2>
     <div id="agenda-list"></div>
-    <button id="toQuests">Empezar Sesiones</button>
+    <button id="toQuests">Empezar Sesiones ➡️</button>
   </div>
 
   <!-- Quests -->
   <div id="quests" class="container hidden">
-    <h2>Mis Quests</h2>
+    <h2>✅ Mis Quests</h2>
     <div class="progress-bar"><div id="progInner" class="progress-bar-inner"></div></div>
     <div id="quest-list"></div>
-    <button id="finishQuests" disabled>Reclamar Recompensa</button>
-    <button id="viewDash" style="margin-left:.5rem;">Ver Dashboard</button>
+    <button id="finishQuests" disabled>🎉 Reclamar Recompensa</button>
+    <button id="viewDash" style="margin-left:.5rem;">📊 Ver Dashboard</button>
   </div>
 
   <!-- Dashboard -->
   <div id="dashboard" class="container hidden">
-    <h2>Dashboard de Coordinación</h2>
-    <div class="card">Arteterapia: <span id="cntArt">0</span> inscritos</div>
-    <div class="card">Lectura de Café: <span id="cntCoffee">0</span> inscritos</div>
-    <div class="card">Lectura de la Mano: <span id="cntPalm">0</span> inscritos</div>
-    <button id="backStart" style="margin-top:1rem;">Volver al inicio</button>
+    <h2>📊 Dashboard de Coordinación</h2>
+    <div class="card">🎨 Arteterapia: <span id="cntArt">0</span> inscritos</div>
+    <div class="card">☕ Lectura de Café: <span id="cntCoffee">0</span> inscritos</div>
+    <div class="card">✋ Lectura de la Mano: <span id="cntPalm">0</span> inscritos</div>
+    <button id="backStart" style="margin-top:1rem;">🔄 Volver al inicio</button>
   </div>
 
   <!-- Modal de recompensa -->
   <div id="modal" class="modal-bg hidden">
     <div class="modal">
-      <h2>¡Felicidades!</h2>
-      <p>Has completado todas tus quests. 🎉</p>
-      <div class="badge">🔖 Badge Obtenido</div>
+      <h2>🎉 ¡Felicidades!</h2>
+      <p>Has completado todas tus quests.</p>
+      <div class="badge">🏅 Badge Obtenido</div>
       <div style="margin-top:1rem;">
-        <button onclick="closeModal()">Ir a Mi Recompensa</button>
+        <button onclick="closeModal()">➡️ Ir a Mi Recompensa</button>
       </div>
     </div>
   </div>
@@ -86,7 +97,6 @@
       'Lectura de la Mano': 4
     };
 
-    // Función para ocultar/mostrar pantallas
     function show(id) {
       ['onboarding','agenda','quests','dashboard'].forEach(x =>
         document.getElementById(x).classList.add('hidden')
@@ -107,24 +117,22 @@
         .filter(i => i.checked)
         .map(i => i.value);
 
-      // Construir agenda
       const agendaList = document.getElementById('agenda-list');
       agendaList.innerHTML = '';
-      sel.forEach((s, i) => {
+      sel.forEach((s,i) => {
         const times = ['10:00','10:15','10:30'];
         const div = document.createElement('div');
-        div.className = 'card';
-        div.textContent = `${s} — Sala ${String.fromCharCode(65 + i)} a las ${times[i]}`;
+        div.className='card';
+        div.textContent = `${s} — Sala ${String.fromCharCode(65+i)} a las ${times[i]}`;
         agendaList.appendChild(div);
       });
 
-      // Actualizar contadores
       sel.forEach(s => {
         let key = s === 'Arteterapia' ? 'Art'
-                  : s === 'Lectura de Café' ? 'Coffee'
-                  : 'Palm';
+                : s === 'Lectura de Café' ? 'Coffee'
+                : 'Palm';
         const span = document.getElementById('cnt' + key);
-        if (span) span.textContent = participants[s] || 0;
+        if(span) span.textContent = participants[s];
       });
 
       show('agenda');
@@ -135,41 +143,46 @@
 
     // Quests
     const questList = document.getElementById('quest-list');
-    const sessions = ['Arteterapia','Lectura de Café','Lectura de la Mano'];
+    const sessionsArr = ['Arteterapia','Lectura de Café','Lectura de la Mano'];
     let completed = {};
     let evidence = {};
-    sessions.forEach(s => {
+    sessionsArr.forEach(s => {
       const card = document.createElement('div');
-      card.className = 'card';
+      card.className='card';
       card.innerHTML = `
         <strong>${s}</strong><br>
+        <p style="margin:.5rem 0; font-size:.9rem; color:#555;">
+          ${ s==='Arteterapia'
+             ? 'Pinta libre mientras conectas con tus emociones (5 min).'
+             : s==='Lectura de Café'
+               ? 'Dibuja la borra y escribe palabras clave (10 min).'
+               : 'Fotografía tu palma y anota líneas y montes (10 min).'
+          }
+        </p>
         <label><input type="checkbox" id="chk-${s}"> Completado</label><br>
-        <input type="file" id="file-${s}" style="margin-top:.5rem;">
-        <div id="badg-${s}"></div>
+        <input type="file" id="file-${s}"><div id="badg-${s}"></div>
       `;
       questList.appendChild(card);
+
       document.getElementById(`chk-${s}`).onchange = e => {
-        completed[s] = e.target.checked;
-        updateProgress();
+        completed[s] = e.target.checked; updateProgress();
       };
       document.getElementById(`file-${s}`).onchange = e => {
         if(e.target.files.length) {
           evidence[s] = e.target.files[0].name;
-          document.getElementById(`badg-${s}`).innerHTML =
-            `<span class="badge">${evidence[s]}</span>`;
+          document.getElementById(`badg-${s}`).innerHTML = `<span class="badge">${evidence[s]}</span>`;
         }
       };
     });
 
     function updateProgress() {
       const done = Object.values(completed).filter(Boolean).length;
-      const pct = done / sessions.length * 100;
+      const pct = done / sessionsArr.length * 100;
       document.getElementById('progInner').style.width = pct + '%';
-      document.getElementById('finishQuests').disabled = (done < sessions.length);
+      document.getElementById('finishQuests').disabled = (done < sessionsArr.length);
     }
-    document.getElementById('finishQuests').onclick = () => {
+    document.getElementById('finishQuests').onclick = () =>
       document.getElementById('modal').classList.remove('hidden');
-    };
     document.getElementById('viewDash').onclick = () => show('dashboard');
 
     function closeModal() {
@@ -177,7 +190,7 @@
       show('dashboard');
     }
 
-    // Volver al inicio desde el Dashboard
+    // Volver al inicio
     document.getElementById('backStart').onclick = () => show('onboarding');
   </script>
 </body>
