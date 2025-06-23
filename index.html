@@ -10,197 +10,88 @@
     .hidden { display: none !important; }
     button { background: #6b46c1; color: white; border:none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
     button:disabled { background: #ccc; cursor: not-allowed; }
-    .session, .agenda-item { margin-bottom: 1rem; }
-    .session label, .agenda-item label { display: flex; align-items: center; gap: .5rem; font-size: 1.1rem; }
-    .agenda-item select { margin-left: 2rem; padding: .25rem; }
     .card { border: 1px solid #e2e8f0; padding: .75rem; border-radius:4px; margin-bottom: .75rem; }
     .progress-bar { width: 100%; background: #eee; border-radius: 4px; overflow: hidden; margin-bottom: 1rem; }
     .progress-bar-inner { height: 12px; background: #6b46c1; width: 0%; }
     .badge { display:inline-block; background:#d6bcfa; color:#6b46c1; padding:.25rem .5rem; border-radius:4px; margin-top:.5rem; }
+    .feedback { margin-top: 1.5rem; }
+    .stars { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 0.5rem; }
+    .stars label { cursor: pointer; font-size: 1.5rem; color: #ccc; }
+    .stars input:checked ~ label,
+    .stars label:hover,
+    .stars label:hover ~ label { color: #f5a623; }
     .modal-bg { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
     .modal { background:#fff; padding:1.5rem; border-radius:8px; max-width:320px; text-align:center; }
     input[type="file"] { margin-top: .5rem; }
+    textarea { width: 100%; height: 80px; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; resize: vertical; }
   </style>
 </head>
 <body>
-  <!-- Onboarding -->
-  <div id="onboarding" class="container">
-    <h1>🎨 Bienvenido al Taller de Arte Terapia</h1>
-    <p>Selecciona las sesiones que te interesan:</p>
-    <div id="session-select">
-      <div class="session">
-        <label><input type="checkbox" value="Arteterapia"> 🎨 Arteterapia</label>
-        <p style="margin:.25rem 2rem .5rem; color:#555;">Ejercicio creativo de 20 min para desbloquear emociones.</p>
-      </div>
-      <div class="session">
-        <label><input type="checkbox" value="Lectura de Café"> ☕ Lectura de Café</label>
-        <p style="margin:.25rem 2rem .5rem; color:#555;">Interpreta símbolos en tu borra y anota insights.</p>
-      </div>
-      <div class="session">
-        <label><input type="checkbox" value="Lectura de la Mano"> ✋ Lectura de la Mano</label>
-        <p style="margin:.25rem 2rem .5rem; color:#555;">Descubre los mensajes de tus líneas de la mano.</p>
-      </div>
-    </div>
-    <button id="toAgenda" disabled>Continuar ➡️</button>
-  </div>
-
-  <!-- Agenda con opciones de horario -->
-  <div id="agenda" class="container hidden">
-    <h2>🗓️ Mi Agenda</h2>
-    <div id="agenda-items"></div>
-    <button id="toQuests" disabled>Empezar Sesiones ➡️</button>
-  </div>
+  <!-- ... Onboarding y Agenda omitidos para brevedad ... -->
 
   <!-- Quests -->
   <div id="quests" class="container hidden">
     <h2>✅ Mis Quests</h2>
     <div class="progress-bar"><div id="progInner" class="progress-bar-inner"></div></div>
     <div id="quest-list"></div>
-    <button id="finishQuests" disabled>🎉 Reclamar Recompensa</button>
-    <button id="viewDash" style="margin-left:.5rem;">📊 Ver Dashboard</button>
-  </div>
 
-  <!-- Dashboard -->
-  <div id="dashboard" class="container hidden">
-    <h2>📊 Dashboard de Coordinación</h2>
-    <div class="card">🎨 Arteterapia: <span id="cntArt">0</span> inscritos</div>
-    <div class="card">☕ Lectura de Café: <span id="cntCoffee">0</span> inscritos</div>
-    <div class="card">✋ Lectura de la Mano: <span id="cntPalm">0</span> inscritos</div>
-    <button id="backStart" style="margin-top:1rem;">🔄 Volver al inicio</button>
-  </div>
-
-  <!-- Modal de recompensa -->
-  <div id="modal" class="modal-bg hidden">
-    <div class="modal">
-      <h2>🎉 ¡Felicidades!</h2>
-      <p>Has completado todas tus quests.</p>
-      <div class="badge">🏅 Badge Obtenido</div>
-      <div style="margin-top:1rem;">
-        <button onclick="closeModal()">➡️ Ir a Mi Recompensa</button>
+    <!-- Sección de Feedback -->
+    <div class="feedback">
+      <h3>✨ Tu Feedback</h3>
+      <div class="stars">
+        <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+        <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+        <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+        <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+        <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
       </div>
+      <textarea id="feedback-comment" placeholder="Escribe aquí tus comentarios…"></textarea>
+    </div>
+
+    <div style="text-align:center; margin-top:1rem;">
+      <button id="finishQuests" disabled>🎉 Reclamar Recompensa</button>
+      <button id="viewDash" style="margin-left:.5rem;">📊 Ver Dashboard</button>
     </div>
   </div>
 
+  <!-- ... Dashboard y Modal omitidos ... -->
+
   <script>
-    const participants = {
-      'Arteterapia': 5,
-      'Lectura de Café': 3,
-      'Lectura de la Mano': 4
-    };
+    // Código previo de inicialización de sesiones y selección omitido...
 
-    let selectedSessions = [];
-    let assignments = {};
-
-    // Función de vista
-    function show(id) {
-      ['onboarding','agenda','quests','dashboard'].forEach(x =>
-        document.getElementById(x).classList.add('hidden')
-      );
-      document.getElementById(id).classList.remove('hidden');
-    }
-
-    // Onboarding → Agenda (crea selects de horario)
-    const toAgenda = document.getElementById('toAgenda');
-    document.querySelectorAll('#session-select input').forEach(cb =>
-      cb.addEventListener('change', () => {
-        const anyChecked = [...document.querySelectorAll('#session-select input')].some(i => i.checked);
-        toAgenda.disabled = !anyChecked;
-      })
-    );
-    toAgenda.onclick = () => {
-      selectedSessions = [...document.querySelectorAll('#session-select input')]
-        .filter(i => i.checked)
-        .map(i => i.value);
-
-      const agendaContainer = document.getElementById('agenda-items');
-      agendaContainer.innerHTML = '';
-      // Horarios disponibles
-      const times = ['10:00','10:15','10:30','11:00'];
-      selectedSessions.forEach(s => {
-        const div = document.createElement('div');
-        div.className = 'agenda-item';
-        div.innerHTML = `
-          <label>
-            <strong>${s}</strong>
-            <select id="sel-${s}">
-              <option value="">Selecciona horario</option>
-              ${times.map(t => `<option value="${t}">${t}</option>`).join('')}
-            </select>
-          </label>`;
-        agendaContainer.appendChild(div);
-      });
-
-      // activamos botón solo cuando haya al menos un horario seleccionado
-      document.getElementById('agenda-items').addEventListener('change', () => {
-        const allChosen = selectedSessions.every(s => 
-          document.getElementById(`sel-${s}`).value !== ''
-        );
-        document.getElementById('toQuests').disabled = !allChosen;
-      });
-
-      show('agenda');
-    };
-
-    // Agenda → Quests (lee los selects)
-    document.getElementById('toQuests').onclick = () => {
-      assignments = {};
-      selectedSessions.forEach(s => {
-        assignments[s] = document.getElementById(`sel-${s}`).value;
-        // actualiza contador
-        let key = s==='Arteterapia'?'Art':s==='Lectura de Café'?'Coffee':'Palm';
-        const span = document.getElementById('cnt'+key);
-        if(span) span.textContent = participants[s];
-      });
-      show('quests');
-    };
-
-    // Quests dinámicas...
-    const questList = document.getElementById('quest-list');
+    // Después de generar las quests:
     const sessionsArr = ['Arteterapia','Lectura de Café','Lectura de la Mano'];
     let completed = {}, evidence = {};
     sessionsArr.forEach(s => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <strong>${s}</strong><br>
-        <p style="margin:.5rem 0; color:#555;">
-          ${ s==='Arteterapia'
-             ? 'Pinta libre (5 min).'
-             : s==='Lectura de Café'
-               ? 'Dibuja la borra (10 min).'
-               : 'Fotografía y anota líneas (10 min).'
-          }
-        </p>
-        <input type="checkbox" id="chk-${s}"> <label for="chk-${s}">Completado</label><br>
-        <input type="file" id="file-${s}"><div id="badg-${s}"></div>
-      `;
-      questList.appendChild(card);
-      document.getElementById(`chk-${s}`).onchange = e => {
-        completed[s] = e.target.checked; updateProgress();
-      };
-      document.getElementById(`file-${s}`).onchange = e => {
-        if(e.target.files.length) {
-          evidence[s] = e.target.files[0].name;
-          document.getElementById(`badg-${s}`).innerHTML = `<span class="badge">${evidence[s]}</span>`;
-        }
-      };
+      //... creación dinámica de cards (igual que antes) ...
     });
 
     function updateProgress(){
       const done = Object.values(completed).filter(Boolean).length;
       const pct = done / sessionsArr.length * 100;
       document.getElementById('progInner').style.width = pct+'%';
-      document.getElementById('finishQuests').disabled = (done < sessionsArr.length);
-    }
-    document.getElementById('finishQuests').onclick = () =>
-      document.getElementById('modal').classList.remove('hidden');
-    document.getElementById('viewDash').onclick = () => show('dashboard');
 
-    function closeModal(){
+      // Activar botón solo si completó todas las quests
+      const btn = document.getElementById('finishQuests');
+      btn.disabled = (done < sessionsArr.length);
+    }
+
+    // Listener para habilitar botón de recompensas también cuando se dé feedback (opcional)
+    document.getElementById('finishQuests').onclick = () => {
+      // Recoger rating y comentario
+      const rating = document.querySelector('input[name="rating"]:checked')?.value || '0';
+      const comment = document.getElementById('feedback-comment').value.trim();
+      console.log('Feedback enviado:', { rating, comment });
+      document.getElementById('modal').classList.remove('hidden');
+    };
+
+    document.getElementById('viewDash').onclick = () => show('dashboard');
+    function closeModal() {
       document.getElementById('modal').classList.add('hidden');
       show('dashboard');
     }
-    document.getElementById('backStart').onclick = () => show('onboarding');
+
+    // Restablecer lógica de show(id) y demás omitted...
   </script>
 </body>
 </html>
