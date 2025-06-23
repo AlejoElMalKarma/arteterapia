@@ -10,7 +10,10 @@
     .hidden { display: none !important; }
     button { background: #6b46c1; color: white; border:none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
     button:disabled { background: #ccc; cursor: not-allowed; }
-    .card { border: 1px solid #e2e8f0; padding: .75rem; border-radius:4px; margin-bottom: 1rem; }
+    .session, .agenda-item, .card { margin-bottom: 1rem; }
+    .session label, .agenda-item label { display: flex; align-items: center; gap: .5rem; font-size: 1.1rem; }
+    .session p, .card p { margin:.25rem 0 .75rem; color:#555; font-size:.9rem; }
+    select { margin-left: 1rem; padding: .25rem; }
     .progress-bar { width: 100%; background: #eee; border-radius: 4px; overflow: hidden; margin-bottom: 1rem; }
     .progress-bar-inner { height: 12px; background: #6b46c1; width: 0%; transition: width .3s; }
     .stars { display: flex; gap: .25rem; margin: .5rem 0; }
@@ -29,26 +32,52 @@
   <!-- Onboarding -->
   <div id="onboarding" class="container">
     <h1>🎨 Bienvenido al Taller de Arte Terapia</h1>
-    <p>Selecciona las sesiones que te interesan:</p>
-    <label><input type="checkbox" id="optArt"> 🎨 Arteterapia</label><br>
-    <label><input type="checkbox" id="optCafe"> ☕ Lectura de Café</label><br>
-    <label><input type="checkbox" id="optHand"> ✋ Lectura de la Mano</label><br><br>
-    <button id="toAgenda" disabled>Continuar ➡️</button>
-  </div>
-
-  <!-- Agenda -->
-  <div id="agenda" class="container hidden">
-    <h2>🗓️ Mi Agenda</h2>
-    <p>(Aquí podrías elegir horarios, pero para simplificar pasamos directamente)</p>
-    <button id="toQuests">Empezar Sesiones ➡️</button>
+    <div class="session">
+      <label><input type="checkbox" id="optArt"> 🎨 <strong>Arteterapia</strong></label>
+      <p>Ejercicio creativo de 20 min para desbloquear emociones a través del color y la forma.</p>
+    </div>
+    <div class="session">
+      <label><input type="checkbox" id="optCafe"> ☕ <strong>Lectura de Café</strong></label>
+      <p>Interpreta símbolos en la borra de tu café y anota insights reveladores.</p>
+    </div>
+    <div class="session">
+      <label><input type="checkbox" id="optHand"> ✋ <strong>Lectura de la Mano</strong></label>
+      <p>Descubre mensajes ocultos en las líneas de tu mano y su relación con tu vida.</p>
+    </div>
+    <h2>🗓️ Elige tu horario</h2>
+    <div id="agenda-select">
+      <div class="agenda-item">
+        <label><strong>Arteterapia:</strong>
+          <select id="sel-Arteterapia">
+            <option value="">Horario…</option>
+            <option>10:00</option><option>10:15</option><option>10:30</option><option>11:00</option>
+          </select>
+        </label>
+      </div>
+      <div class="agenda-item">
+        <label><strong>Lectura de Café:</strong>
+          <select id="sel-LecturaCafe">
+            <option value="">Horario…</option>
+            <option>10:00</option><option>10:15</option><option>10:30</option><option>11:00</option>
+          </select>
+        </label>
+      </div>
+      <div class="agenda-item">
+        <label><strong>Lectura de la Mano:</strong>
+          <select id="sel-LecturaHand">
+            <option value="">Horario…</option>
+            <option>10:00</option><option>10:15</option><option>10:30</option><option>11:00</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <button id="toQuests" disabled>Continuar ➡️</button>
   </div>
 
   <!-- Quests -->
   <div id="quests" class="container hidden">
     <h2>✅ Mis Quests</h2>
     <div class="progress-bar"><div id="progInner" class="progress-bar-inner"></div></div>
-
-    <!-- Siempre 3 Quests -->
     <div id="quest-list">
       <!-- Arteterapia -->
       <div class="card">
@@ -99,9 +128,8 @@
         <textarea id="comment-Hand" placeholder="Comentarios..."></textarea>
       </div>
     </div>
-
     <div class="flex">
-      <button id="finishQuests" disabled>🎉 Reclamar Recompensa</button>
+      <button id="finishQuests" disabled>🎉 Ir a Mi Recompensa</button>
       <button id="viewDash">📊 Ver Dashboard</button>
     </div>
   </div>
@@ -119,65 +147,55 @@
   <div id="modal" class="modal-bg hidden">
     <div class="modal">
       <h2>🎉 ¡Felicidades!</h2>
-      <p>Has completado todas tus quests.</p>
-      <button onclick="closeModal()">Ir a Mi Recompensa</button>
+      <p>Tu recompensa está lista.</p>
+      <button onclick="closeModal()">🔄 Volver al inicio</button>
     </div>
   </div>
 
   <script>
-    const participants = { Arteterapia: 5, Cafeteria: 3, Hand: 4 };
-    const chkIds = ['Arteterapia','LecturaCafe','LecturaHand'];
-    const chkMap = {
-      'Arteterapia':'chk-Arteterapia',
-      'LecturaCafe':'chk-LecturaCafe',
-      'LecturaHand':'chk-LecturaHand'
-    };
+    const participants = { Arteterapia:5, LecturaCafe:3, LecturaHand:4 };
+    const show = id=>['onboarding','quests','dashboard','agenda'].forEach(x=>
+      document.getElementById(x).classList.add('hidden')) || document.getElementById(id).classList.remove('hidden');
 
-    function show(id){
-      ['onboarding','agenda','quests','dashboard'].forEach(x=>
-        document.getElementById(x).classList.add('hidden')
-      );
-      document.getElementById(id).classList.remove('hidden');
-    }
-
-    // Onboarding → Agenda
-    document.querySelectorAll('#onboarding input[type=checkbox]').forEach(cb=>
-      cb.addEventListener('change',()=>{
+    // Onboarding logic
+    const chkOpts = ['optArt','optCafe','optHand'];
+    chkOpts.forEach(id=>{
+      document.getElementById(id).onchange = ()=> {
+        document.getElementById('toQuests').disabled = 
+          !chkOpts.every(opt => document.getElementById(opt).checked) ||
+          !['sel-Arteterapia','sel-LecturaCafe','sel-LecturaHand']
+            .every(sel=>document.getElementById(sel).value);
         document.getElementById('toAgenda').disabled =
-          !Array.from(document.querySelectorAll('#onboarding input[type=checkbox]'))
-            .some(i=>i.checked);
-      })
-    );
+          !chkOpts.some(opt=>document.getElementById(opt).checked);
+      };
+    });
+    document.getElementById('toQuests').onclick = ()=> renderQuests() & show('quests');
     document.getElementById('toAgenda').onclick = ()=> show('agenda');
 
-    // Agenda → Quests
-    document.getElementById('toQuests').onclick = ()=>{
-      show('quests');
-    };
-
-    // Quests: detectar completados
-    chkIds.forEach(key=>{
-      const id = chkMap[key];
-      document.getElementById(id).addEventListener('change',()=>{
-        updateProgress();
+    // Render quests (always 3)
+    function renderQuests(){
+      // update dashboard counts
+      ['Arteterapia','LecturaCafe','LecturaHand'].forEach(s=>{
+        const key = s==='Arteterapia'?'Art':s==='LecturaCafe'?'Coffee':'Hand';
+        document.getElementById('cnt'+key).textContent = participants[s];
       });
+    }
+
+    // Progress
+    const chkQuests = ['chk-Arteterapia','chk-LecturaCafe','chk-LecturaHand'];
+    chkQuests.forEach(id=>{
+      document.getElementById(id).onchange = ()=>{
+        const done = chkQuests.filter(c=>document.getElementById(c).checked).length;
+        document.getElementById('progInner').style.width = (done/3*100)+'%';
+        document.getElementById('finishQuests').disabled = done<3;
+      };
     });
 
-    function updateProgress(){
-      const done = chkIds.filter(k=>document.getElementById(chkMap[k]).checked).length;
-      document.getElementById('progInner').style.width = (done/3*100)+'%';
-      document.getElementById('finishQuests').disabled = done<3;
-    }
-
-    document.getElementById('finishQuests').onclick = ()=>{
-      document.getElementById('modal').classList.remove('hidden');
-    };
+    // Finish
+    document.getElementById('finishQuests').onclick = ()=> show('modal');
     document.getElementById('viewDash').onclick = ()=> show('dashboard');
     document.getElementById('backStart').onclick = ()=> show('onboarding');
-    function closeModal(){
-      document.getElementById('modal').classList.add('hidden');
-      show('dashboard');
-    }
+    function closeModal(){ show('onboarding'); }
   </script>
 </body>
 </html>
