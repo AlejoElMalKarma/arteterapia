@@ -10,22 +10,17 @@
     .hidden { display: none !important; }
     button { background: #6b46c1; color: white; border:none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
     button:disabled { background: #ccc; cursor: not-allowed; }
-    .session, .agenda-item, .card { margin-bottom: 1rem; }
-    .session label, .agenda-item label { display: flex; align-items: center; gap: .5rem; font-size: 1.1rem; }
-    .session p, .card p { margin:.25rem 0 .75rem; color:#555; font-size:.9rem; }
-    select { margin-left: 1rem; padding: .25rem; }
+    .card { border: 1px solid #e2e8f0; padding: .75rem; border-radius:4px; margin-bottom: 1rem; }
     .progress-bar { width: 100%; background: #eee; border-radius: 4px; overflow: hidden; margin-bottom: 1rem; }
     .progress-bar-inner { height: 12px; background: #6b46c1; width: 0%; transition: width .3s; }
-    .badge { display:inline-block; background:#d6bcfa; color:#6b46c1; padding:.25rem .5rem; border-radius:4px; margin-top:.5rem; }
-    .stars { display: flex; gap: .25rem; justify-content: flex-start; margin: .5rem 0; }
+    .stars { display: flex; gap: .25rem; margin: .5rem 0; }
     .stars input { display: none; }
     .stars label { font-size: 1.25rem; color: #ccc; cursor: pointer; }
     .stars input:checked ~ label,
     .stars label:hover,
     .stars label:hover ~ label { color: #f5a623; }
     textarea { width: 100%; height: 60px; padding: .5rem; border: 1px solid #ccc; border-radius: 4px; margin-top: .5rem; resize: vertical; }
-    .flex { display: flex; gap: .5rem; }
-    .flex-center { justify-content: center; }
+    .flex { display: flex; gap: .5rem; justify-content: center; }
     .modal-bg { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
     .modal { background:#fff; padding:1.5rem; border-radius:8px; max-width:320px; text-align:center; }
   </style>
@@ -35,39 +30,77 @@
   <div id="onboarding" class="container">
     <h1>🎨 Bienvenido al Taller de Arte Terapia</h1>
     <p>Selecciona las sesiones que te interesan:</p>
-    <div id="session-select">
-      <div class="session">
-        <label><input type="checkbox" value="Arteterapia"> 🎨 Arteterapia</label>
-        <p>Ejercicio creativo de 20 min para desbloquear emociones.</p>
-      </div>
-      <div class="session">
-        <label><input type="checkbox" value="Lectura de Café"> ☕ Lectura de Café</label>
-        <p>Interpreta símbolos en tu borra y anota insights.</p>
-      </div>
-      <div class="session">
-        <label><input type="checkbox" value="Lectura de la Mano"> ✋ Lectura de la Mano</label>
-        <p>Descubre los mensajes de tus líneas de la mano.</p>
-      </div>
-    </div>
+    <label><input type="checkbox" id="optArt"> 🎨 Arteterapia</label><br>
+    <label><input type="checkbox" id="optCafe"> ☕ Lectura de Café</label><br>
+    <label><input type="checkbox" id="optHand"> ✋ Lectura de la Mano</label><br><br>
     <button id="toAgenda" disabled>Continuar ➡️</button>
   </div>
 
-  <!-- Agenda con horarios -->
+  <!-- Agenda -->
   <div id="agenda" class="container hidden">
     <h2>🗓️ Mi Agenda</h2>
-    <div id="agenda-items"></div>
-    <button id="toQuests" disabled>Empezar Sesiones ➡️</button>
+    <p>(Aquí podrías elegir horarios, pero para simplificar pasamos directamente)</p>
+    <button id="toQuests">Empezar Sesiones ➡️</button>
   </div>
 
-  <!-- Quests con feedback individual -->
+  <!-- Quests -->
   <div id="quests" class="container hidden">
     <h2>✅ Mis Quests</h2>
     <div class="progress-bar"><div id="progInner" class="progress-bar-inner"></div></div>
-    
-    <!-- *** Este es el contenedor que faltaba *** -->
-    <div id="quest-list"></div>
-    
-    <div class="flex flex-center">
+
+    <!-- Siempre 3 Quests -->
+    <div id="quest-list">
+      <!-- Arteterapia -->
+      <div class="card">
+        <h3>🎨 Arteterapia</h3>
+        <p>Pinta libre (5 min).</p>
+        <label><input type="checkbox" id="chk-Arteterapia"> Completado</label><br>
+        <input type="file" id="file-Arteterapia"><br>
+        <strong>Tu valoración:</strong>
+        <div class="stars">
+          <input type="radio" id="star5-Art" name="rating-Art" value="5"><label for="star5-Art">★</label>
+          <input type="radio" id="star4-Art" name="rating-Art" value="4"><label for="star4-Art">★</label>
+          <input type="radio" id="star3-Art" name="rating-Art" value="3"><label for="star3-Art">★</label>
+          <input type="radio" id="star2-Art" name="rating-Art" value="2"><label for="star2-Art">★</label>
+          <input type="radio" id="star1-Art" name="rating-Art" value="1"><label for="star1-Art">★</label>
+        </div>
+        <textarea id="comment-Art" placeholder="Comentarios..."></textarea>
+      </div>
+      <!-- Lectura de Café -->
+      <div class="card">
+        <h3>☕ Lectura de Café</h3>
+        <p>Dibuja la borra (10 min).</p>
+        <label><input type="checkbox" id="chk-LecturaCafe"> Completado</label><br>
+        <input type="file" id="file-LecturaCafe"><br>
+        <strong>Tu valoración:</strong>
+        <div class="stars">
+          <input type="radio" id="star5-Cafe" name="rating-Cafe" value="5"><label for="star5-Cafe">★</label>
+          <input type="radio" id="star4-Cafe" name="rating-Cafe" value="4"><label for="star4-Cafe">★</label>
+          <input type="radio" id="star3-Cafe" name="rating-Cafe" value="3"><label for="star3-Cafe">★</label>
+          <input type="radio" id="star2-Cafe" name="rating-Cafe" value="2"><label for="star2-Cafe">★</label>
+          <input type="radio" id="star1-Cafe" name="rating-Cafe" value="1"><label for="star1-Cafe">★</label>
+        </div>
+        <textarea id="comment-Cafe" placeholder="Comentarios..."></textarea>
+      </div>
+      <!-- Lectura de la Mano -->
+      <div class="card">
+        <h3>✋ Lectura de la Mano</h3>
+        <p>Fotografía y anota líneas (10 min).</p>
+        <label><input type="checkbox" id="chk-LecturaHand"> Completado</label><br>
+        <input type="file" id="file-LecturaHand"><br>
+        <strong>Tu valoración:</strong>
+        <div class="stars">
+          <input type="radio" id="star5-Hand" name="rating-Hand" value="5"><label for="star5-Hand">★</label>
+          <input type="radio" id="star4-Hand" name="rating-Hand" value="4"><label for="star4-Hand">★</label>
+          <input type="radio" id="star3-Hand" name="rating-Hand" value="3"><label for="star3-Hand">★</label>
+          <input type="radio" id="star2-Hand" name="rating-Hand" value="2"><label for="star2-Hand">★</label>
+          <input type="radio" id="star1-Hand" name="rating-Hand" value="1"><label for="star1-Hand">★</label>
+        </div>
+        <textarea id="comment-Hand" placeholder="Comentarios..."></textarea>
+      </div>
+    </div>
+
+    <div class="flex">
       <button id="finishQuests" disabled>🎉 Reclamar Recompensa</button>
       <button id="viewDash">📊 Ver Dashboard</button>
     </div>
@@ -76,31 +109,31 @@
   <!-- Dashboard -->
   <div id="dashboard" class="container hidden">
     <h2>📊 Dashboard de Coordinación</h2>
-    <div class="card">🎨 Arteterapia: <span id="cntArt">0</span> inscritos</div>
-    <div class="card">☕ Lectura de Café: <span id="cntCoffee">0</span> inscritos</div>
-    <div class="card">✋ Lectura de la Mano: <span id="cntPalm">0</span> inscritos</div>
-    <button id="backStart" style="margin-top:1rem;">🔄 Volver al inicio</button>
+    <div class="card">Arteterapia inscritos: <span id="cntArt">0</span></div>
+    <div class="card">Lectura de Café inscritos: <span id="cntCoffee">0</span></div>
+    <div class="card">Lectura de la Mano inscritos: <span id="cntHand">0</span></div>
+    <button id="backStart">🔄 Volver al inicio</button>
   </div>
 
-  <!-- Modal de recompensa -->
+  <!-- Modal -->
   <div id="modal" class="modal-bg hidden">
     <div class="modal">
       <h2>🎉 ¡Felicidades!</h2>
       <p>Has completado todas tus quests.</p>
-      <div class="badge">🏅 Badge Obtenido</div>
-      <div style="margin-top:1rem;">
-        <button onclick="closeModal()">➡️ Ir a Mi Recompensa</button>
-      </div>
+      <button onclick="closeModal()">Ir a Mi Recompensa</button>
     </div>
   </div>
 
   <script>
-    // Datos simulados
-    const participants = { Arteterapia: 5, 'Lectura de Café': 3, 'Lectura de la Mano': 4 };
-    const sessions = ['Arteterapia','Lectura de Café','Lectura de la Mano'];
-    let selectedSessions = [], completed = {}, evidence = {};
+    const participants = { Arteterapia: 5, Cafeteria: 3, Hand: 4 };
+    const chkIds = ['Arteterapia','LecturaCafe','LecturaHand'];
+    const chkMap = {
+      'Arteterapia':'chk-Arteterapia',
+      'LecturaCafe':'chk-LecturaCafe',
+      'LecturaHand':'chk-LecturaHand'
+    };
 
-    function show(id) {
+    function show(id){
       ['onboarding','agenda','quests','dashboard'].forEach(x=>
         document.getElementById(x).classList.add('hidden')
       );
@@ -108,122 +141,43 @@
     }
 
     // Onboarding → Agenda
-    document.querySelectorAll('#session-select input').forEach(cb=>
-      cb.addEventListener('change', ()=> {
+    document.querySelectorAll('#onboarding input[type=checkbox]').forEach(cb=>
+      cb.addEventListener('change',()=>{
         document.getElementById('toAgenda').disabled =
-          ![...document.querySelectorAll('#session-select input')].some(i=>i.checked);
+          !Array.from(document.querySelectorAll('#onboarding input[type=checkbox]'))
+            .some(i=>i.checked);
       })
     );
-    document.getElementById('toAgenda').onclick = ()=>{
-      selectedSessions = [...document.querySelectorAll('#session-select input')]
-        .filter(i=>i.checked).map(i=>i.value);
-
-      const container = document.getElementById('agenda-items');
-      container.innerHTML = '';
-      const times = ['10:00','10:15','10:30','11:00'];
-      selectedSessions.forEach(s=>{
-        const div = document.createElement('div');
-        div.className='agenda-item';
-        div.innerHTML=`
-          <label>
-            <strong>${s}</strong>
-            <select id="sel-${s}">
-              <option value="">Horario…</option>
-              ${times.map(t=>`<option>${t}</option>`).join('')}
-            </select>
-          </label>`;
-        container.appendChild(div);
-      });
-
-      container.addEventListener('change', ()=>{
-        document.getElementById('toQuests').disabled =
-          !selectedSessions.every(s=>document.getElementById(`sel-${s}`).value);
-      });
-
-      show('agenda');
-    };
+    document.getElementById('toAgenda').onclick = ()=> show('agenda');
 
     // Agenda → Quests
     document.getElementById('toQuests').onclick = ()=>{
-      selectedSessions.forEach(s=>{
-        const key = s==='Arteterapia'?'Art':s==='Lectura de Café'?'Coffee':'Palm';
-        document.getElementById('cnt'+key).textContent = participants[s];
-      });
-      renderQuests();
       show('quests');
     };
 
-    // Renderizado de Quests + Feedback
-    function renderQuests(){
-      const list = document.getElementById('quest-list');
-      list.innerHTML=''; completed={}; evidence={};
-      selectedSessions.forEach(s=>{
-        const idSafe = s.replace(/[^A-Za-z0-9]/g,'');
-        const card = document.createElement('div');
-        card.className='card';
-        card.innerHTML=`
-          <h3>${s}</h3>
-          <p>${s==='Arteterapia'
-             ? 'Pinta libre (5 min).'
-             : s==='Lectura de Café'
-               ? 'Dibuja la borra (10 min).'
-               : 'Fotografía y anota líneas (10 min).'
-          }</p>
-          <label><input type="checkbox" id="chk-${idSafe}"> Completado</label><br>
-          <input type="file" id="file-${idSafe}"><br>
-          <strong>Tu valoración:</strong>
-          <div class="stars">
-            ${[5,4,3,2,1].map(n=>
-              `<input type="radio" id="star${n}-${idSafe}" name="rating-${idSafe}" value="${n}">
-               <label for="star${n}-${idSafe}">★</label>`
-            ).join('')}
-          </div>
-          <textarea id="comment-${idSafe}" placeholder="Comentarios..."></textarea>
-        `;
-        list.appendChild(card);
-
-        document.getElementById(`chk-${idSafe}`).onchange=e=>{
-          completed[s]=e.target.checked; updateProgress();
-        };
-        document.getElementById(`file-${idSafe}`).onchange=e=>{
-          if(e.target.files.length){
-            evidence[s]=e.target.files[0].name;
-            const b=document.createElement('span');
-            b.className='badge'; b.textContent=evidence[s];
-            card.appendChild(b);
-          }
-        };
+    // Quests: detectar completados
+    chkIds.forEach(key=>{
+      const id = chkMap[key];
+      document.getElementById(id).addEventListener('change',()=>{
+        updateProgress();
       });
-      updateProgress();
-    }
+    });
 
-    // Progreso y habilitación de botón
     function updateProgress(){
-      const done = selectedSessions.filter(s=>completed[s]).length;
-      const pct = done/selectedSessions.length*100;
-      document.getElementById('progInner').style.width=pct+'%';
-      document.getElementById('finishQuests').disabled=(done<selectedSessions.length);
+      const done = chkIds.filter(k=>document.getElementById(chkMap[k]).checked).length;
+      document.getElementById('progInner').style.width = (done/3*100)+'%';
+      document.getElementById('finishQuests').disabled = done<3;
     }
 
-    // Reclamar recompensa
-    document.getElementById('finishQuests').onclick=()=>{
-      const results=selectedSessions.map(s=>{
-        const idSafe=s.replace(/[^A-Za-z0-9]/g,'');
-        return{
-          session:s,
-          rating:document.querySelector(`input[name="rating-${idSafe}"]:checked`)?.value||0,
-          comment:document.getElementById(`comment-${idSafe}`).value.trim()
-        };
-      });
-      console.log('Feedback:',results);
+    document.getElementById('finishQuests').onclick = ()=>{
       document.getElementById('modal').classList.remove('hidden');
     };
-    document.getElementById('viewDash').onclick=()=>show('dashboard');
+    document.getElementById('viewDash').onclick = ()=> show('dashboard');
+    document.getElementById('backStart').onclick = ()=> show('onboarding');
     function closeModal(){
       document.getElementById('modal').classList.add('hidden');
       show('dashboard');
     }
-    document.getElementById('backStart').onclick=()=>show('onboarding');
   </script>
 </body>
 </html>
