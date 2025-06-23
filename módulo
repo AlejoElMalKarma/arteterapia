@@ -23,12 +23,8 @@
 </head>
 <body>
   <div id="onboarding" class="container">
-    <h1>Bienvenido</h1>
-    <p>Ve este breve vídeo y selecciona las sesiones que te interesan:</p>
-    <video controls style="width:100%; margin-bottom:1rem;" poster="">
-      <source src="intro-taller.mp4" type="video/mp4">
-      Tu navegador no soporta video.
-    </video>
+    <h1>Bienvenido al Taller de Arte Terapia</h1>
+    <p>Selecciona las sesiones que te interesan:</p>
     <div id="session-select">
       <label class="session"><input type="checkbox" value="Arteterapia"> Arteterapia</label>
       <label class="session"><input type="checkbox" value="Lectura de Café"> Lectura de Café</label>
