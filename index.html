@@ -32,7 +32,7 @@
   <!-- 1. Onboarding: seleccionar quests -->
   <div id="onboarding" class="container">
     <h1>🎨 Taller Arte Terapia</h1>
-    <p>Marca las tres actividades para participar:</p>
+    <p>Marca una o más actividades para participar:</p>
     <div class="session">
       <label><input type="checkbox" id="optArt"> 🎨 Arteterapia</label>
       <p>Ejercicio creativo de 20 min para desbloquear emociones.</p>
@@ -84,7 +84,6 @@
   <div id="quests" class="container hidden">
     <h2>✅ Mis Quests</h2>
     <div class="progress-bar"><div id="progInner" class="progress-bar-inner"></div></div>
-    <!-- Siempre 3 Quests -->
     <div id="quest-list">
       <div class="card">
         <h3>🎨 Arteterapia</h3><p>Pinta libre (5 min).</p>
@@ -153,57 +152,64 @@
   </div>
 
   <script>
-    // helpers
-    const show = id=>['onboarding','schedule','quests','dashboard'].forEach(x=>
-      document.getElementById(x).classList.add('hidden'))||document.getElementById(id).classList.remove('hidden');
+    // Helper para mostrar/ocultar pantallas
+    function show(id) {
+      ['onboarding','schedule','quests','dashboard'].forEach(x=>
+        document.getElementById(x).classList.add('hidden')
+      );
+      document.getElementById(id).classList.remove('hidden');
+    }
 
     // 1. Onboarding → Schedule
-    const optArt = document.getElementById('optArt'),
-          optCafe = document.getElementById('optCafe'),
-          optHand = document.getElementById('optHand'),
-          toSchedule = document.getElementById('toSchedule'),
-          toQuests = document.getElementById('toQuests');
-
-    [optArt,optCafe,optHand].forEach(cb=>
-      cb.onchange = ()=> {
-        // habilita continuar solo si las 3 marcadas
-        toSchedule.disabled = !(optArt.checked && optCafe.checked && optHand.checked);
-      }
-    );
-    toSchedule.onclick = ()=> show('schedule');
-
-    // 2. Schedule → Quests
-    ['Arteterapia','LecturaCafe','LecturaHand'].forEach(id=>{
-      document.getElementById('sel-'+id).onchange = ()=> {
-        toQuests.disabled = ['sel-Arteterapia','sel-LecturaCafe','sel-LecturaHand']
-          .some(sel=>document.getElementById(sel).value==='');
+    const opts = [ 'optArt', 'optCafe', 'optHand' ];
+    const toSchedule = document.getElementById('toSchedule');
+    opts.forEach(id => {
+      document.getElementById(id).onchange = () => {
+        // ahora habilita si al menos UNA está marcada
+        toSchedule.disabled = !opts.some(opt => document.getElementById(opt).checked);
       };
     });
-    toQuests.onclick = ()=> {
-      // actualizar dashboard contadores
-      document.getElementById('cntArt').textContent = optArt.checked?1:0;
-      document.getElementById('cntCoffee').textContent = optCafe.checked?1:0;
-      document.getElementById('cntHand').textContent = optHand.checked?1:0;
+    toSchedule.onclick = () => show('schedule');
+
+    // 2. Schedule → Quests
+    const sels = [ 'sel-Arteterapia', 'sel-LecturaCafe', 'sel-LecturaHand' ];
+    const toQuests = document.getElementById('toQuests');
+    sels.forEach(id => {
+      document.getElementById(id).onchange = () => {
+        // seguir requiriendo que SELECCIONES horarios en las ACTIVIDADES marcadas
+        const active = {
+          Arteterapia: document.getElementById('optArt').checked,
+          LecturaCafe: document.getElementById('optCafe').checked,
+          LecturaHand: document.getElementById('optHand').checked
+        };
+        toQuests.disabled = !Object.entries(active).every(([key,act]) =>
+          !act || document.getElementById('sel-'+key).value
+        );
+      };
+    });
+    toQuests.onclick = () => {
+      // actualizar contadores en dashboard
+      if (document.getElementById('optArt').checked)   document.getElementById('cntArt').textContent = 1;
+      if (document.getElementById('optCafe').checked)  document.getElementById('cntCoffee').textContent = 1;
+      if (document.getElementById('optHand').checked)  document.getElementById('cntHand').textContent = 1;
       show('quests');
     };
 
-    // 3. Quests → Finish button enable
-    ['Art','Cafe','Hand'].forEach(s=>{
-      document.getElementById('chk-'+s).onchange = ()=> {
-        const done = ['chk-Art','chk-Cafe','chk-Hand']
-          .filter(id=>document.getElementById(id).checked).length;
+    // 3. Quests → desbloquear recompensa
+    const chkIds = [ 'Art','Cafe','Hand' ];
+    chkIds.forEach(key => {
+      document.getElementById('chk-'+key).onchange = () => {
+        const done = chkIds.filter(k => document.getElementById('chk-'+k).checked).length;
         document.getElementById('progInner').style.width = (done/3*100)+'%';
-        document.getElementById('finishQuests').disabled = done<3;
+        document.getElementById('finishQuests').disabled = done < 3;
       };
     });
-    document.getElementById('finishQuests').onclick = ()=> show('modal');
-    document.getElementById('viewDash').onclick = ()=> show('dashboard');
+    document.getElementById('finishQuests').onclick = () => show('modal');
+    document.getElementById('viewDash').onclick = () => show('dashboard');
 
-    // Modal & Dashboard → restart
-    const backStart = document.getElementById('backStart'),
-          finishModal = () => show('onboarding');
-    document.getElementById('backStart').onclick = finishModal;
-    window.closeModal = finishModal;
+    // Reiniciar desde Dashboard o Modal
+    document.getElementById('backStart').onclick = () => show('onboarding');
+    function closeModal(){ show('onboarding'); }
   </script>
 </body>
 </html>
