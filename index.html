@@ -29,7 +29,7 @@
   </style>
 </head>
 <body>
-  <!-- 1. Onboarding: seleccionar quests -->
+  <!-- 1️⃣ Onboarding: seleccionar actividades -->
   <div id="onboarding" class="container">
     <h1>🎨 Taller Arte Terapia</h1>
     <p>Marca una o más actividades para participar:</p>
@@ -48,43 +48,20 @@
     <button id="toSchedule" disabled>Continuar ➡️</button>
   </div>
 
-  <!-- 2. Schedule: elegir horario -->
+  <!-- 2️⃣ Schedule: horaria dinámico -->
   <div id="schedule" class="container hidden">
     <h2>🗓️ Selecciona tu horario</h2>
-    <div id="agenda-select">
-      <div class="agenda-item">
-        <label><strong>Arteterapia:</strong>
-          <select id="sel-Arteterapia">
-            <option value="">Horario…</option>
-            <option>10:00</option><option>10:15</option><option>10:30</option><option>11:00</option>
-          </select>
-        </label>
-      </div>
-      <div class="agenda-item">
-        <label><strong>Lectura de Café:</strong>
-          <select id="sel-LecturaCafe">
-            <option value="">Horario…</option>
-            <option>10:00</option><option>10:15</option><option>10:30</option><option>11:00</option>
-          </select>
-        </label>
-      </div>
-      <div class="agenda-item">
-        <label><strong>Lectura de la Mano:</strong>
-          <select id="sel-LecturaHand">
-            <option value="">Horario…</option>
-            <option>10:00</option><option>10:15</option><option>10:30</option><option>11:00</option>
-          </select>
-        </label>
-      </div>
-    </div>
+    <div id="agenda-select"></div>
     <button id="toQuests" disabled>Empezar Sesiones ➡️</button>
   </div>
 
-  <!-- 3. Quests: marcar completado y feedback -->
+  <!-- 3️⃣ Quests: completar + feedback -->
   <div id="quests" class="container hidden">
     <h2>✅ Mis Quests</h2>
     <div class="progress-bar"><div id="progInner" class="progress-bar-inner"></div></div>
+    <!-- siempre aparecen las tres -->
     <div id="quest-list">
+      <!-- Arteterapia -->
       <div class="card">
         <h3>🎨 Arteterapia</h3><p>Pinta libre (5 min).</p>
         <label><input type="checkbox" id="chk-Art"> Completado</label><br>
@@ -99,6 +76,7 @@
         </div>
         <textarea id="comment-Art" placeholder="Comentarios..."></textarea>
       </div>
+      <!-- Lectura de Café -->
       <div class="card">
         <h3>☕ Lectura de Café</h3><p>Dibuja la borra (10 min).</p>
         <label><input type="checkbox" id="chk-Cafe"> Completado</label><br>
@@ -113,6 +91,7 @@
         </div>
         <textarea id="comment-Cafe" placeholder="Comentarios..."></textarea>
       </div>
+      <!-- Lectura de la Mano -->
       <div class="card">
         <h3>✋ Lectura de la Mano</h3><p>Fotografía y anota líneas (10 min).</p>
         <label><input type="checkbox" id="chk-Hand"> Completado</label><br>
@@ -129,12 +108,12 @@
       </div>
     </div>
     <div class="flex">
-      <button id="finishQuests" disabled>🎉 Ir a Mi Recompensa</button>
+      <button id="finishQuests" disabled>🎉 Ver Recompensa</button>
       <button id="viewDash">📊 Ver Dashboard</button>
     </div>
   </div>
 
-  <!-- Dashboard -->
+  <!-- 📊 Dashboard -->
   <div id="dashboard" class="container hidden">
     <h2>📊 Dashboard de Coordinación</h2>
     <div class="card">Arteterapia inscritos: <span id="cntArt">0</span></div>
@@ -143,7 +122,7 @@
     <button id="backStart">🔄 Volver al inicio</button>
   </div>
 
-  <!-- Modal -->
+  <!-- 🎉 Modal -->
   <div id="modal" class="modal-bg hidden">
     <div class="modal">
       <h2>🎉 ¡Tu recompensa está lista!</h2>
@@ -152,7 +131,7 @@
   </div>
 
   <script>
-    // Helper para mostrar/ocultar pantallas
+    // Helper para cambiar vistas
     function show(id) {
       ['onboarding','schedule','quests','dashboard'].forEach(x=>
         document.getElementById(x).classList.add('hidden')
@@ -160,55 +139,71 @@
       document.getElementById(id).classList.remove('hidden');
     }
 
-    // 1. Onboarding → Schedule
-    const opts = [ 'optArt', 'optCafe', 'optHand' ];
+    // 1️⃣ Onboarding → Schedule
+    const opts = ['optArt','optCafe','optHand'];
     const toSchedule = document.getElementById('toSchedule');
-    opts.forEach(id => {
-      document.getElementById(id).onchange = () => {
-        // ahora habilita si al menos UNA está marcada
-        toSchedule.disabled = !opts.some(opt => document.getElementById(opt).checked);
+    opts.forEach(id=>{
+      document.getElementById(id).onchange = ()=>{
+        // habilita continuar si al menos UNA seleccionada
+        toSchedule.disabled = !opts.some(o=>document.getElementById(o).checked);
       };
     });
-    toSchedule.onclick = () => show('schedule');
-
-    // 2. Schedule → Quests
-    const sels = [ 'sel-Arteterapia', 'sel-LecturaCafe', 'sel-LecturaHand' ];
-    const toQuests = document.getElementById('toQuests');
-    sels.forEach(id => {
-      document.getElementById(id).onchange = () => {
-        // seguir requiriendo que SELECCIONES horarios en las ACTIVIDADES marcadas
-        const active = {
-          Arteterapia: document.getElementById('optArt').checked,
-          LecturaCafe: document.getElementById('optCafe').checked,
-          LecturaHand: document.getElementById('optHand').checked
-        };
-        toQuests.disabled = !Object.entries(active).every(([key,act]) =>
-          !act || document.getElementById('sel-'+key).value
+    let selected = [];
+    toSchedule.onclick = ()=>{
+      // genera dinámicamente los selects
+      selected = [];
+      opts.forEach(o=>{
+        if (document.getElementById(o).checked) {
+          const map = { optArt:'Arteterapia', optCafe:'LecturaCafe', optHand:'LecturaHand' };
+          selected.push(map[o]);
+        }
+      });
+      const container = document.getElementById('agenda-select');
+      container.innerHTML = '';
+      const times = ['10:00','10:15','10:30','11:00'];
+      selected.forEach(key=>{
+        const label = document.createElement('label');
+        label.className = 'agenda-item';
+        label.innerHTML = `
+          <strong>${ key==='Arteterapia' ? 'Arteterapia' : key==='LecturaCafe' ? 'Lectura de Café' : 'Lectura de la Mano' }:</strong>
+          <select id="sel-${key}">
+            <option value="">Horario…</option>
+            ${ times.map(t=>`<option value="${t}">${t}</option>`).join('') }
+          </select>`;
+        container.appendChild(label);
+      });
+      // escucha cambios para habilitar siguiente
+      container.onchange = ()=>{
+        document.getElementById('toQuests').disabled = selected.some(k=>
+          document.getElementById('sel-'+k).value===''
         );
       };
-    });
-    toQuests.onclick = () => {
-      // actualizar contadores en dashboard
-      if (document.getElementById('optArt').checked)   document.getElementById('cntArt').textContent = 1;
-      if (document.getElementById('optCafe').checked)  document.getElementById('cntCoffee').textContent = 1;
-      if (document.getElementById('optHand').checked)  document.getElementById('cntHand').textContent = 1;
+      show('schedule');
+    };
+
+    // 2️⃣ Schedule → Quests
+    document.getElementById('toQuests').onclick = ()=>{
+      // actualiza contadores en Dashboard
+      if (selected.includes('Arteterapia'))   document.getElementById('cntArt').textContent = 1;
+      if (selected.includes('LecturaCafe'))   document.getElementById('cntCoffee').textContent = 1;
+      if (selected.includes('LecturaHand'))   document.getElementById('cntHand').textContent = 1;
       show('quests');
     };
 
-    // 3. Quests → desbloquear recompensa
-    const chkIds = [ 'Art','Cafe','Hand' ];
-    chkIds.forEach(key => {
-      document.getElementById('chk-'+key).onchange = () => {
-        const done = chkIds.filter(k => document.getElementById('chk-'+k).checked).length;
+    // 3️⃣ Quests → Progreso y recompensa
+    ['Art','Cafe','Hand'].forEach(k=>{
+      document.getElementById('chk-'+k).onchange = ()=>{
+        const done = ['chk-Art','chk-Cafe','chk-Hand']
+          .filter(id=>document.getElementById(id).checked).length;
         document.getElementById('progInner').style.width = (done/3*100)+'%';
-        document.getElementById('finishQuests').disabled = done < 3;
+        document.getElementById('finishQuests').disabled = done<3;
       };
     });
-    document.getElementById('finishQuests').onclick = () => show('modal');
-    document.getElementById('viewDash').onclick = () => show('dashboard');
+    document.getElementById('finishQuests').onclick = ()=> show('modal');
+    document.getElementById('viewDash').onclick = ()=> show('dashboard');
 
-    // Reiniciar desde Dashboard o Modal
-    document.getElementById('backStart').onclick = () => show('onboarding');
+    // Reinicio
+    document.getElementById('backStart').onclick = ()=> show('onboarding');
     function closeModal(){ show('onboarding'); }
   </script>
 </body>
